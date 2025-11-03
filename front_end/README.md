@@ -6,7 +6,7 @@ It provides a modern platform for managing instructors, students, and assignment
 ---
 
 ## 🏗 Project Structure
-
+```
 academia_suite/
 │
 ├── backend/ # Spring Boot backend
@@ -35,9 +35,7 @@ academia_suite/
 ├── Flowchart.png # System flow diagram
 ├── uml.png # UML diagram
 └── README.md # Documentation (this file)
-
-yaml
-Copy code
+```
 
 ---
 
@@ -49,7 +47,8 @@ Copy code
 - MySQL Server  
 
 ### Steps
-```bash
+```
+bash
 cd backend
 Configure src/main/resources/application.properties:
 
@@ -63,13 +62,15 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 server.port=8080
 Build and run:
-
+```
+```
 bash
-Copy code
+
 mvn clean install
 mvn spring-boot:run
 API will run at:
 👉 http://localhost:8080
+```
 
 💻 Frontend Setup (React + Vite)
 Prerequisites
@@ -80,11 +81,13 @@ npm or yarn
 Steps
 bash
 Copy code
+```
 cd front_end/front_end
 npm install
 npm run dev
 React app will start at:
 👉 http://localhost:5173
+```
 
 🔗 API Integration
 The frontend connects to backend APIs via Axios.
@@ -92,7 +95,9 @@ Update API base URL in src/services/api.js if needed:
 
 js
 Copy code
+```
 const BASE_URL = "http://localhost:8080";
+```
 🔒 Authentication
 Uses JWT (JSON Web Token) for securing endpoints.
 
