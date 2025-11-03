@@ -1,0 +1,15 @@
+body {
+  background-color: #f8f9fa;
+  font-family: "Poppins", sans-serif;
+}
+
+.hero {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: white;
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
