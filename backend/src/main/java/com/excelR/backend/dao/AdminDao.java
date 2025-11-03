@@ -1,5 +1,7 @@
 package com.excelR.backend.dao;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -15,8 +17,15 @@ public class AdminDao {
 	@Autowired
 	AdminRepository repo;
 	
+	
 	public Admin saveUser(Admin admin) {
 		admin.setPassword(password.encode(admin.getPassword()));
 		return repo.save(admin);
 	}
+	
+	public Optional<Admin> fetchUserByUserName(String userName) {
+		return repo.findByUserName(userName);
+	}
+	
+	
 }

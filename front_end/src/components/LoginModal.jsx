@@ -10,6 +10,7 @@ function LoginModal({ show, onHide }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // ✅ Switch role tabs
   const handleSelect = (selectedRole) => setRole(selectedRole);
 
   const getHeaderIcon = () => <FaUserShield className="me-2" />;
@@ -18,17 +19,44 @@ function LoginModal({ show, onHide }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `http://localhost:8080/api/login/${role.toLowerCase()}`;
-      const response = await axios.post(endpoint, { email, password });
+      const endpoint = `http://localhost:8080/auth/${role.toLowerCase()}/login`;
+
+      const payload = {
+        userName: email, // backend expects userName
+        password: password,
+      };
+
+      const response = await axios.post(endpoint, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (response.status === 200) {
+        const data = response.data;
+        const { token, role: userRole, userName } = data;
+
+        // ✅ Store user info
+        localStorage.setItem("token", token || "");
+        localStorage.setItem("role", userRole || role.toLowerCase());
+        localStorage.setItem("userName", userName);
+
         alert(`${role} login successful!`);
         onHide();
-        navigate("/about"); // 👈 redirect after successful login
+
+        // ✅ Navigate based on role
+        if (role === "Student") navigate("/student/dashboard");
+        else if (role === "Instructor") navigate("/instructor/dashboard");
+        else if (role === "Admin") navigate("/admin/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Invalid credentials. Please try again.");
+
+      if (error.response?.status === 400) {
+        alert("Invalid username or password. Please try again.");
+      } else if (error.response?.status === 403) {
+        alert("Access denied. Please check your permissions.");
+      } else {
+        alert("Login failed. Server unavailable or CORS issue.");
+      }
     }
   };
 
@@ -36,13 +64,13 @@ function LoginModal({ show, onHide }) {
   const handleBackdropClick = (e) => {
     if (e.target.id === "custom-backdrop") {
       onHide();
-      navigate("/about"); // 👈 redirect when clicking outside
+      navigate("/");
     }
   };
 
   return (
     <>
-      {/* Custom backdrop */}
+      {/* Backdrop */}
       {show && (
         <div
           id="custom-backdrop"
@@ -86,7 +114,7 @@ function LoginModal({ show, onHide }) {
           <button
             onClick={() => {
               onHide();
-              navigate("/about"); // 👈 navigate to About page when ❌ clicked
+              navigate("/");
             }}
             style={{
               background: "transparent",
@@ -104,7 +132,6 @@ function LoginModal({ show, onHide }) {
         {/* BODY */}
         <Modal.Body className="p-4">
           <Tab.Container activeKey={role} onSelect={handleSelect}>
-            {/* ROLE TABS */}
             <Nav variant="pills" className="justify-content-center mb-3">
               {["Student", "Instructor", "Admin"].map((r) => (
                 <Nav.Item key={r}>
@@ -125,16 +152,16 @@ function LoginModal({ show, onHide }) {
             <Tab.Content>
               <Tab.Pane eventKey={role}>
                 <Form onSubmit={handleLogin}>
-                  {/* EMAIL */}
+                  {/* EMAIL / USERNAME */}
                   <Form.Group className="mb-3" controlId="formEmail">
-                    <Form.Label>Email Address</Form.Label>
+                    <Form.Label>User Name</Form.Label>
                     <InputGroup>
                       <InputGroup.Text>
                         <FaEnvelope />
                       </InputGroup.Text>
                       <Form.Control
-                        type="email"
-                        placeholder={`${role.toLowerCase()}@acadimica.edu`}
+                        type="text"
+                        placeholder={`Enter your username`}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -166,22 +193,18 @@ function LoginModal({ show, onHide }) {
                       label="Remember me"
                       className="text-muted"
                     />
-                    <a
-                      href="#"
-                      className="text-decoration-none small text-primary"
-                    >
+                    <a href="#" className="text-decoration-none small text-primary">
                       Forgot password?
                     </a>
                   </div>
 
-                  {/* SIGN IN BUTTON */}
+                  {/* SIGN IN */}
                   <Button
                     variant="primary"
                     type="submit"
                     className="w-100 py-2"
                     style={{
-                      background:
-                        "linear-gradient(135deg, #6e8efb 0%, #a777e3 100%)",
+                      background: "linear-gradient(135deg, #6e8efb 0%, #a777e3 100%)",
                       border: "none",
                     }}
                   >
